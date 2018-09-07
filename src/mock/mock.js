@@ -14,7 +14,9 @@ import {
 import {
   ShGoodsList,
 } from './data/goods';
-
+import {
+  ShCompanyList,
+} from './data/company';
 
 let _Users = Users;
 let _Records = Records;
@@ -22,6 +24,7 @@ let _MoneyList = MoneyList;
 let _ShMoneyList = ShMoneyList;
 let _ShGoodsList = ShGoodsList;
 let _ShRecordsList = ShRecordsList;
+let _ShCompanyList = ShCompanyList;
 let _ShMoneyMain = ShMoneyMain;
 
 
@@ -140,6 +143,9 @@ export default {
         }, 1000);
       });
     });
+
+
+    //商会交易记录列表
     mock.onGet('/shrecord/listpage').reply(config => {
       let {
         page,
@@ -162,6 +168,30 @@ export default {
         }, 1000);
       });
     });
+    //商会企业管理列表
+    mock.onGet('/shcompanylist/listpage').reply(config => {
+      let {
+        page,
+        accounts,
+        companyname,
+        province
+      } = config.params;
+      let mockShCompanyList = _ShCompanyList.filter(record => {
+        if (accounts && record.accounts != accounts || companyname && record.companyname != companyname || province && record.province != province) return false;
+        return true;
+      });
+      let total = mockShCompanyList.length;
+      mockShCompanyList = mockShCompanyList.filter((u, index) => index < 20 * page && index >= 20 * (page - 1));
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve([200, {
+            total: total,
+            ShCompanyList: mockShCompanyList
+          }]);
+        }, 1000);
+      });
+    });
+
 
 
     mock.onGet('/money/listpage').reply(config => {

@@ -29,6 +29,13 @@ export const getShGoodsPage = params => {
     });
 };
 
+//商会企业管理列表
+export const getShCompanyListPage = params => {
+    return axios.get(`${base}/shcompanylist/listpage`, {
+        params: params
+    });
+};
+
 
 
 export const getShMoneyMain = params => {

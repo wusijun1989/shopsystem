@@ -20,6 +20,17 @@ import ShProperty from './views/ShPage/property/Property.vue'
 import ShCompany from './views/ShPage/company/company.vue'
 import ShInduction from './views/ShPage/company/induction.vue'
 
+import PtHome from './views/PtPage/Home.vue'
+import PtMain from './views/PtPage/Main.vue'
+import PtSet from './views/PtPage/set/Set.vue'
+import PtGoods from './views/PtPage/goods/Goods.vue'
+import PtAddGoods from './views/PtPage/goods/AddGoods.vue'
+import PtSelfGoods from './views/PtPage/goods/SelfGoods.vue'
+import PtProperty from './views/PtPage/property/Property.vue'
+import PtOrder from './views/PtPage/order/Orderlist.vue'
+import PtOrderDetails from './views/PtPage/order/OrderDetails.vue'
+import PtCompany from './views/PtPage/company/company.vue'
+import PtCommerce from './views/PtPage/company/induction.vue'
 
 let routes = [{
         path: '/login',
@@ -34,10 +45,11 @@ let routes = [{
         hidden: true
     },
     //{ path: '/main', component: Main },
+    // 企业 start
     {
         path: '/',
         component: QyHome,
-        name: '概况',
+        name: '企业概况',
         type: "qiye",
         iconCls: 'fa fa-cube', //图标样式class
         leaf: true, //只有一个节点
@@ -50,7 +62,7 @@ let routes = [{
     {
         path: '/',
         component: QyHome,
-        name: '商品',
+        name: '商品管理',
         type: "qiye",
         iconCls: 'fa fa-window-restore', //图标样式class
         children: [{
@@ -73,7 +85,7 @@ let routes = [{
     {
         path: '/',
         component: QyHome,
-        name: '订单',
+        name: '订单管理',
         type: "qiye",
         iconCls: 'fa fa-calendar-check-o', //图标样式class
         children: [{
@@ -92,7 +104,7 @@ let routes = [{
         path: '/',
         component: QyHome,
         type: "qiye",
-        name: '财务',
+        name: '财务管理',
         iconCls: 'fa fa-bar-chart', //图标样式class
         leaf: true, //只有一个节点
         children: [{
@@ -115,12 +127,11 @@ let routes = [{
         }]
     },
 
-
-
+    // 商会 start
     {
         path: '/',
         component: ShHome,
-        name: '概况   ',
+        name: '商会概况   ',
         type: "shanghui",
         iconCls: 'fa fa-cube', //图标样式class
         leaf: true, //只有一个节点
@@ -150,21 +161,21 @@ let routes = [{
     },
     {
         path: '/',
-        component: QyHome,
+        component: ShHome,
         type: "shanghui",
-        name: '财务',
+        name: '财务管理  ',
         iconCls: 'fa fa-bar-chart', //图标样式class
         leaf: true, //只有一个节点
         children: [{
             path: '/shproperty',
             component: ShProperty,
-            name: '财务管理'
+            name: '财务管理   '
         }]
     },
 
     {
         path: '/',
-        component: QyHome,
+        component: ShHome,
         type: "shanghui",
         name: '企业管理',
         iconCls: 'fa fa-bar-chart', //图标样式class
@@ -194,6 +205,94 @@ let routes = [{
             name: '设置 '
         }]
     },
+    // 平台 start
+    {
+        path: '/',
+        component: PtHome,
+        name: '平台概况',
+        type: "pingtai",
+        iconCls: 'fa fa-cube', //图标样式class
+        leaf: true, //只有一个节点
+        children: [{
+            path: '/ptmain',
+            component: PtMain,
+            name: '平台概况 '
+        }]
+    },
+    {
+        path: '/',
+        component: PtHome,
+        name: '商品管理',
+        type: "pingtai",
+        iconCls: 'fa fa-window-restore', //图标样式class
+        children: [{
+                path: '/ptgoods',
+                component: PtGoods,
+                name: '商品管理'
+            }, {
+                path: '/ptselfgoods',
+                component: PtSelfGoods,
+                name: '自营商品'
+            },
+            {
+                path: '/ptaddgoods',
+                component: PtAddGoods,
+                name: '添加商品'
+            },
+
+        ]
+    },
+    {
+        path: '/',
+        component: PtHome,
+        name: '订单管理',
+        type: "pingtai",
+        iconCls: 'fa fa-calendar-check-o', //图标样式class
+        children: [{
+                path: '/ptorder',
+                component: PtOrder,
+                name: '订单列表'
+            },
+            {
+                path: '/ptorderdetails',
+                component: PtOrderDetails,
+                name: '订单详情'
+            },
+        ]
+    },
+    {
+        path: '/',
+        component: PtHome,
+        name: '客户管理',
+        type: "pingtai",
+        iconCls: 'fa fa-calendar-check-o', //图标样式class
+        children: [{
+                path: '/ptCommerce',
+                component: PtCommerce,
+                name: '商会管理'
+            }, {
+                path: '/ptCompany',
+                component: PtCompany,
+                name: '企业管理'
+            }
+
+
+        ]
+    },
+    {
+        path: '/',
+        component: PtHome,
+        type: "pingtai",
+        name: '财务管理',
+        iconCls: 'fa fa-bar-chart', //图标样式class
+        leaf: true, //只有一个节点
+        children: [{
+            path: '/ptproperty',
+            component: PtProperty,
+            name: '交易记录'
+        }]
+    },
+
 
 
     {

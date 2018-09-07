@@ -80,27 +80,27 @@
 </template>
     <!--列表-->
 <el-table :data="Records" highlight-current-row v-loading="listLoading" style="width: 100%;" key="sRecords">
-			<el-table-column type="index" width="60">
+			<el-table-column type="index" width="50">
 			</el-table-column>
-			<el-table-column prop="username" label="用户名" width="200" sortable>
+			<el-table-column prop="username" label="用户名" width="180" sortable>
 			</el-table-column>
-			<el-table-column prop="type" label="类型" width="150" :formatter="formatType" sortable>
+			<el-table-column prop="type" label="类型" width="100" :formatter="formatType" sortable>
 			</el-table-column>
-      <el-table-column prop="order_number" label="订单号" width="200" sortable>
+      <el-table-column prop="order_number" label="订单号" width="180" sortable>
 			</el-table-column>
-      <el-table-column prop="pay_number" label="支付单号" width="200" sortable>
+      <el-table-column prop="pay_number" label="支付单号" width="180" sortable>
 			</el-table-column>
-			<el-table-column prop="money" label="金额" width="200"  sortable>
+			<el-table-column prop="money" label="金额" width="120"  sortable>
 			</el-table-column>
-    	<el-table-column prop="paytype" label="支付方式" width="200"  sortable>
+    	<el-table-column prop="paytype" label="支付方式" width="120" :formatter="payState" sortable>
 			</el-table-column>
 			<el-table-column prop="state" label="状态" width="100" :formatter="formatState" sortable>
 			</el-table-column>
-      <el-table-column prop="time" label="创建时间" width="200" sortable>
+      <el-table-column prop="time" label="创建时间" width="180" sortable>
 			</el-table-column>
-			<el-table-column prop="updata_time" label="最后修改时间" width="200" sortable>
+			<el-table-column prop="updata_time" label="最后修改时间" width="180" sortable>
 			</el-table-column>
-			<el-table-column prop="remarks" label="备注" width="250" sortable>
+			<el-table-column prop="remarks" label="备注" width="200" sortable>
 			</el-table-column>
 		</el-table>
 
@@ -121,7 +121,20 @@
 
 
   </template>
-
+<el-dialog title="提现" :visible.sync="dialogFormVisible">
+  <el-form :model="form" label-width="30%">
+    <el-form-item label="提现金额" >
+      <el-input v-model="form.name" auto-complete="off" style="width:200px; "></el-input>
+    </el-form-item>
+    <el-form-item label="验证码" >
+ <el-input v-model="form.name" auto-complete="off" style="width:200px; margin-right:20px;"></el-input>   <el-button type="primary">发送验证码</el-button>
+    </el-form-item>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+  </div>
+</el-dialog>
 	</section>
     </div>
 </template>
@@ -185,6 +198,11 @@ export default {
     },
     formatType: function(row, column) {
       return row.type == 1 ? "商会分润" : row.type == 0 ? "销售" : "全部";
+    },
+    payState: function(row, column) {
+      return row.type == 1
+        ? "平台转账"
+        : row.type == 0 ? "钱包支付" : "平台转账";
     },
     moneyList() {
       let para = {

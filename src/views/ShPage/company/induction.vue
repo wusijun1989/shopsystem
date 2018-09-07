@@ -1,82 +1,76 @@
 <template>
 <div class="main-content">
 	<section>
-		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="padding-bottom: 0px; margin-bottom:20px;">
-			<el-form :inline="true" :model="filters">
-			
-				<el-form-item>
-					<el-button type="primary"  @click="$router.push('/addgoods')">新增商品</el-button>
-				</el-form-item>
-			</el-form>
-		</el-col>
-<el-radio-group v-model="radio3" style="margin-bottom:20px"><el-radio-button label="上架中"></el-radio-button><el-radio-button label="待上架"></el-radio-button><el-radio-button label="已下架"></el-radio-button>   </el-radio-group>
+
+<div class="search">
+        <el-col :span="24" class="toolbar" style="padding-bottom: 0px; margin-bottom:20px">
+          <el-form :inline="true">
+            <el-form-item label="帐号">
+             	<el-input v-model="form.accounts" ></el-input>
+            </el-form-item>
+            <el-form-item label="省">
+               	<el-input v-model="form.province" ></el-input>  
+            </el-form-item>
+            <el-form-item label="企业名称">
+              <el-input v-model="form.companyname" ></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" v-on:click="getShCompany">查询</el-button>
+            </el-form-item>
+          </el-form>
+        </el-col>
+    </div>
+
+
 		<!--列表-->
 
 <div class="table-wap">
 
-		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
-			<el-table-column type="selection" width="80" fixed="left">
+		<el-table :data="companylist" highlight-current-row v-loading="listLoading"  style="width: 100%;">
+			<el-table-column prop="id" label="ID" width="150" sortable>
 			</el-table-column>
-			<el-table-column type="index" width="60">
+			<el-table-column prop="accounts" label="帐号" min-width="150" max-width="300" sortable>
 			</el-table-column>
-			<el-table-column prop="goods" label="商品" width="150" sortable>
-				 <template slot-scope="scope">
-      				<img  :src="scope.row.goods" alt="" width="50" height="50">
-   				 </template>
+	    <el-table-column prop="name" label="企业名称" width="150"  sortable>
 			</el-table-column>
-			<el-table-column prop="name" label="价格" min-width="150" max-width="300" sortable>
-	 			<template slot-scope="scope">
-      				{{scope.row.name}}
-					 <span class="price">￥{{scope.row.price}}</span> 
-   				 </template>
-
+      <el-table-column prop="province" label="省" width="150"  sortable>
+			</el-table-column>
+      <el-table-column prop="city" label="市" width="150"  sortable>
 			</el-table-column>
 			<el-table-column prop="time" label="创建时间" width="200"   sortable>
 			</el-table-column>
-			<el-table-column prop="age" label="访客数/浏览量" width="150"  sortable>
-			</el-table-column>
-			<el-table-column prop="sales" label="总销量" width="150"  sortable>
-			</el-table-column>
-			<el-table-column prop="state" label="状态" width="150" :formatter="formatSex" sortable>
+		  <el-table-column prop="login_time" label="最近登录时间" width="200"   sortable>
 			</el-table-column>
 			<el-table-column label="操作" width="250" fixed="right">
 				<template slot-scope="scope">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
-					<el-button type="warning" size="small">下架</el-button>
+					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">查看</el-button>
+			
 				</template>
 			</el-table-column>
 		</el-table>
-
-		<!--工具条-->
-		<el-col :span="24" class="toolbar" style=" float:none;">
-			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
-			</el-pagination>
-		</el-col>
 </div>
 		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+		<el-dialog title="企业详情" :visible.sync="editFormVisible" :close-on-click-modal="false">
+			<el-form :model="editForm" label-width="120px" :rules="editFormRules" ref="editForm">
+				<el-form-item label="土味有限公司" prop="name">
+					<span>土味有限公司</span>
 				</el-form-item>
-				<el-form-item label="性别">
-					<el-radio-group v-model="editForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
+				<el-form-item label="主营类目">
+					<span>农产品</span>
 				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
+				<el-form-item label="企业logo">
+					
 				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
+				<el-form-item label="所在地">
+				
 				</el-form-item>
-				<el-form-item label="地址">
+				<el-form-item label="简介">
 					<el-input type="textarea" v-model="editForm.addr"></el-input>
 				</el-form-item>
+        <el-form-item label="所属商会">
+					<span>河北商会</span>
+				</el-form-item>
+
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="editFormVisible = false">取消</el-button>
@@ -84,33 +78,8 @@
 			</div>
 		</el-dialog>
 
-		<!--新增界面-->
-		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="性别">
-					<el-radio-group v-model="addForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="addForm.age" :min="0" :max="200"></el-input-number>
-				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="addForm.addr"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="addFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
-			</div>
-		</el-dialog>
+
+	
 	</section>
     </div>
 </template>
@@ -118,31 +87,30 @@
 <script>
 import util from "../../../common/js/util";
 //import NProgress from 'nprogress'
-import {
-  getUserListPage,
-  removeUser,
-  batchRemoveUser,
-  editUser,
-  addUser
-} from "../../../api/api";
+import { getShCompanyListPage, editUser } from "../../../api/api";
 
 export default {
   data() {
     return {
-      filters: {
-        name: ""
+      form: {
+        accounts: "",
+        province: "",
+        companyname: ""
       },
-      users: [],
+
+      companylist: [],
+
       total: 0,
       page: 1,
       listLoading: false,
-      sels: [], //列表选中列
 
       editFormVisible: false, //编辑界面是否显示
       editLoading: false,
+
       editFormRules: {
         name: [{ required: true, message: "请输入姓名", trigger: "blur" }]
       },
+
       //编辑界面数据
       editForm: {
         id: 0,
@@ -151,85 +119,38 @@ export default {
         age: 0,
         birth: "",
         addr: ""
-      },
-
-      addFormVisible: false, //新增界面是否显示
-      addLoading: false,
-      addFormRules: {
-        name: [{ required: true, message: "请输入姓名", trigger: "blur" }]
-      },
-      //新增界面数据
-      addForm: {
-        name: "",
-        sex: -1,
-        age: 0,
-        birth: "",
-        addr: ""
-      },
-      radio3: "上架中"
+      }
     };
   },
   methods: {
-    //性别显示转换
-    formatSex: function(row, column) {
-      return row.sex == 1 ? "已上架" : row.sex == 0 ? "代上架" : "已下架";
-    },
     handleCurrentChange(val) {
       this.page = val;
-      this.getUsers();
+      this.getShCompany();
     },
     //获取用户列表
-    getUsers() {
+    getShCompany() {
       let para = {
         page: this.page,
-        name: this.filters.name
+        accounts: this.form.accounts,
+        province: this.form.province,
+        companyname: this.form.companyname
       };
       this.listLoading = true;
       //NProgress.start();
-      getUserListPage(para).then(res => {
+      getShCompanyListPage(para).then(res => {
         this.total = res.data.total;
-        this.users = res.data.users;
+        this.companylist = res.data.ShCompanyList;
         // console.log(res.data);
         this.listLoading = false;
         //NProgress.done();
       });
     },
-    //删除
-    handleDel: function(index, row) {
-      this.$confirm("确认删除该记录吗?", "提示", {
-        type: "warning"
-      })
-        .then(() => {
-          this.listLoading = true;
-          //NProgress.start();
-          let para = { id: row.id };
-          removeUser(para).then(res => {
-            this.listLoading = false;
-            //NProgress.done();
-            this.$message({
-              message: "删除成功",
-              type: "success"
-            });
-            this.getUsers();
-          });
-        })
-        .catch(() => {});
-    },
+
     //显示编辑界面
     handleEdit: function(index, row) {
       this.editFormVisible = true;
+      console.log(this.editFormVisible);
       this.editForm = Object.assign({}, row);
-    },
-    //显示新增界面
-    handleAdd: function() {
-      this.addFormVisible = true;
-      this.addForm = {
-        name: "",
-        sex: -1,
-        age: 0,
-        birth: "",
-        addr: ""
-      };
     },
 
     //编辑
@@ -258,62 +179,10 @@ export default {
           });
         }
       });
-    },
-    //新增
-    addSubmit: function() {
-      this.$refs.addForm.validate(valid => {
-        if (valid) {
-          this.$confirm("确认提交吗？", "提示", {}).then(() => {
-            this.addLoading = true;
-            //NProgress.start();
-            let para = Object.assign({}, this.addForm);
-            para.birth =
-              !para.birth || para.birth == ""
-                ? ""
-                : util.formatDate.format(new Date(para.birth), "yyyy-MM-dd");
-            addUser(para).then(res => {
-              this.addLoading = false;
-              //NProgress.done();
-              this.$message({
-                message: "提交成功",
-                type: "success"
-              });
-              this.$refs["addForm"].resetFields();
-              this.addFormVisible = false;
-              this.getUsers();
-            });
-          });
-        }
-      });
-    },
-    selsChange: function(sels) {
-      this.sels = sels;
-    },
-    //批量删除
-    batchRemove: function() {
-      var ids = this.sels.map(item => item.id).toString();
-      this.$confirm("确认删除选中记录吗？", "提示", {
-        type: "warning"
-      })
-        .then(() => {
-          this.listLoading = true;
-          //NProgress.start();
-          let para = { ids: ids };
-          batchRemoveUser(para).then(res => {
-            this.listLoading = false;
-            //NProgress.done();
-            this.$message({
-              message: "删除成功",
-              type: "success"
-            });
-            this.getUsers();
-          });
-        })
-        .catch(() => {});
     }
   },
   mounted() {
-    this.getUsers();
+    this.getShCompany();
   }
 };
 </script>
