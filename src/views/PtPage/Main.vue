@@ -11,7 +11,7 @@
                             <span>昨日交易额</span>
                         </div>
                         <div  class="text item">
-                                 <span class="f-36">99999</span>
+                                 <span class="f-36">{{SH_totalnum.yesterday_order}}</span>
     总计昨日交易金额 
                         </div>
                     </el-card>
@@ -22,11 +22,11 @@
 			<el-card class="box-card"  >
             <div slot="header" class="clearfix">
                 <span>昨日订单</span>
-              <el-button style="float: right; padding: 3px 0" type="text">提现</el-button> 
+             
             </div>
             <div  class="text item">
-                                            <span class="f-36">99999</span>
-  总计昨日订单数 
+                                            <span class="f-36">{{SH_totalnum.yesterday_order_num}}</span>
+  总计昨日订单量 
             </div>
             </el-card>
             </div>
@@ -47,7 +47,7 @@
     <span>总订单</span>
   </div>
   <div  class="text item">
-    <span class="f-24">99999</span>
+    <span class="f-24">{{SH_totalnum.total_order_num}}</span>
     总计订单量 
   </div>
 </el-card></el-col>
@@ -58,7 +58,7 @@
     <span>待发货订单</span>
   </div>
   <div  class="text item">
-      <span class="f-24">99999</span>
+      <span class="f-24">{{SH_totalnum.send_order_num}}</span>
     总计待发货订单量 
   </div>
 </el-card>
@@ -70,7 +70,7 @@
     <span>待收货订单</span>
   </div>
   <div  class="text item">
-         <span class="f-24">99999</span>
+         <span class="f-24">{{SH_totalnum.collect_order_num}}</span>
     总计待收货订单量 
   </div>
 </el-card>
@@ -95,7 +95,28 @@
 </template>
 
 <script>
-export default {};
+import { getShMoneyMain } from "../../api/api";
+export default {
+  data() {
+    return {
+      SH_totalnum: "",
+      MoneyList: [],
+      money_total: 0,
+      money_page: 1,
+      listLoading: false
+    };
+  },
+  methods: {
+    shmoneyMain() {
+      getShMoneyMain().then(res => {
+        this.SH_totalnum = res.data.ShMoneyMain;
+      });
+    }
+  },
+  mounted() {
+    this.shmoneyMain();
+  }
+};
 </script>
 
 <style lang="scss" scoped>

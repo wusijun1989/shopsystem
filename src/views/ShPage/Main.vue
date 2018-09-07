@@ -12,7 +12,7 @@
                         </div>
                         <div  class="text item">
                                  <span class="f-36">{{SH_totalnum.yesterday_income}}</span>
-    昨日收入预估（待结算） 
+    昨日收入预估（待结算）  
                         </div>
                     </el-card>
                 </div>

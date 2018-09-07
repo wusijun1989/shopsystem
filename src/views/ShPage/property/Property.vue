@@ -122,12 +122,12 @@
 
   </template>
 <el-dialog title="提现" :visible.sync="dialogFormVisible">
-  <el-form :model="form" label-width="30%">
+  <el-form :model="subform" label-width="30%">
     <el-form-item label="提现金额" >
-      <el-input v-model="form.name" auto-complete="off" style="width:200px; "></el-input>
+      <el-input v-model="subform.money" auto-complete="off" style="width:200px; "></el-input>
     </el-form-item>
     <el-form-item label="验证码" >
- <el-input v-model="form.name" auto-complete="off" style="width:200px; margin-right:20px;"></el-input>   <el-button type="primary">发送验证码</el-button>
+ <el-input v-model="subform.code" auto-complete="off" style="width:200px; margin-right:20px;"></el-input>   <el-button type="primary">发送验证码</el-button>
     </el-form-item>
   </el-form>
   <div slot="footer" class="dialog-footer">
@@ -146,6 +146,10 @@ export default {
   data() {
     return {
       dialogFormVisible: false,
+      subform: {
+        money: "",
+        code: ""
+      },
       form: {
         time: "",
         state: "",
