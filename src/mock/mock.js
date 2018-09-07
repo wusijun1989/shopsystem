@@ -6,18 +6,24 @@ import {
 } from './data/user';
 import {
   Records,
+  ShRecordsList,
   MoneyList,
   ShMoneyList,
   ShMoneyMain
 } from './data/record';
-
+import {
+  ShGoodsList,
+} from './data/goods';
 
 
 let _Users = Users;
 let _Records = Records;
 let _MoneyList = MoneyList;
 let _ShMoneyList = ShMoneyList;
+let _ShGoodsList = ShGoodsList;
+let _ShRecordsList = ShRecordsList;
 let _ShMoneyMain = ShMoneyMain;
+
 
 export default {
   /**
@@ -134,6 +140,29 @@ export default {
         }, 1000);
       });
     });
+    mock.onGet('/shrecord/listpage').reply(config => {
+      let {
+        page,
+        time,
+        state,
+        type
+      } = config.params;
+      let mockShRecordsList = _ShRecordsList.filter(record => {
+        if (state && record.state != parseInt(state) || type && record.type != parseInt(type) || time && record.time.indexOf(time) == -1) return false;
+        return true;
+      });
+      let total = mockShRecordsList.length;
+      mockShRecordsList = mockShRecordsList.filter((u, index) => index < 20 * page && index >= 20 * (page - 1));
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve([200, {
+            total: total,
+            ShRecordsList: mockShRecordsList
+          }]);
+        }, 1000);
+      });
+    });
+
 
     mock.onGet('/money/listpage').reply(config => {
       let {
@@ -177,6 +206,29 @@ export default {
         }, 1000);
       });
     });
+
+    //商会商品管理列表
+    mock.onGet('/shgoods/listpage').reply(config => {
+      let {
+        page
+      } = config.params;
+      let mockShGoodsList = _ShGoodsList.filter(record => {
+        return true;
+      });
+      let total = mockShGoodsList.length;
+      mockShGoodsList = mockShGoodsList.filter((u, index) => index < 10 * page && index >= 10 * (page - 1));
+
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve([200, {
+            total: total,
+            ShGoodsList: mockShGoodsList
+          }]);
+        }, 1000);
+      });
+    });
+
+
     //商会概览
     mock.onGet('/shmoney/main').reply(config => {
       let mockShMoneyMain = _ShMoneyMain;

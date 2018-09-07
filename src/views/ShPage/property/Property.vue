@@ -23,7 +23,7 @@
                       </el-table-column>
                       <el-table-column prop="income" label="收入"  min-width="180">
                       </el-table-column>
-                     <el-table-column prop="expend"    label="支出" min-width="180">
+                     <el-table-column prop="expend" label="支出" min-width="180">
                       </el-table-column>
                       <el-table-column  prop="balance" label="操作后余额">
                       </el-table-column>
@@ -66,7 +66,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" v-on:click="getRecord">查询</el-button>
+              <el-button type="primary" v-on:click="getShRecord">查询</el-button>
             </el-form-item>
           </el-form>
         </el-col>
@@ -79,30 +79,28 @@
     </div>
 </template>
     <!--列表-->
-<el-table :data="Records" highlight-current-row v-loading="listLoading" style="width: 100%;">
+<el-table :data="Records" highlight-current-row v-loading="listLoading" style="width: 100%;" key="sRecords">
 			<el-table-column type="index" width="60">
 			</el-table-column>
-			<el-table-column prop="order_number" label="订单号" width="200" sortable>
+			<el-table-column prop="username" label="用户名" width="200" sortable>
 			</el-table-column>
-			<el-table-column prop="type" label="类型" width="150"  :formatter="formatType"  sortable>
+			<el-table-column prop="type" label="类型" width="150" :formatter="formatType" sortable>
 			</el-table-column>
-			<el-table-column prop="time" label="创建时间" width="200" sortable>
+      <el-table-column prop="order_number" label="订单号" width="200" sortable>
 			</el-table-column>
-			<el-table-column prop="updata_time" label="最后修改时间" width="200"  sortable>
+      <el-table-column prop="pay_number" label="支付单号" width="200" sortable>
 			</el-table-column>
-			<el-table-column prop="pay_number" label="支付单号" width="200"  sortable>
+			<el-table-column prop="money" label="金额" width="200"  sortable>
 			</el-table-column>
-			<el-table-column prop="money" label="总金额" width="200"  sortable>
+    	<el-table-column prop="paytype" label="支付方式" width="200"  sortable>
 			</el-table-column>
 			<el-table-column prop="state" label="状态" width="100" :formatter="formatState" sortable>
 			</el-table-column>
-			<el-table-column label="操作" width="250">
-<template slot-scope="scope">
-    <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
-        编辑</el-button>
-    <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
-    <el-button type="warning" size="small">下架</el-button>
-</template>
+      <el-table-column prop="time" label="创建时间" width="200" sortable>
+			</el-table-column>
+			<el-table-column prop="updata_time" label="最后修改时间" width="200" sortable>
+			</el-table-column>
+			<el-table-column prop="remarks" label="备注" width="250" sortable>
 			</el-table-column>
 		</el-table>
 
@@ -124,33 +122,12 @@
 
   </template>
 
-
-<!-- Form -->
-
-
-<el-dialog title="提现" :visible.sync="dialogFormVisible">
-  <el-form :model="form" label-width="30%">
-    <el-form-item label="提现金额" :label-width="formLabelWidth">
-      <el-input v-model="form.name" auto-complete="off" style="width:200px; "></el-input>
-    </el-form-item>
-    <el-form-item label="验证码" :label-width="formLabelWidth">
- <el-input v-model="form.name" auto-complete="off" style="width:200px; margin-right:20px;"></el-input>   <el-button type="primary">发送验证码</el-button>
-    </el-form-item>
-  </el-form>
-  <div slot="footer" class="dialog-footer">
-    <el-button @click="dialogFormVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
-  </div>
-</el-dialog>
-
-
-
 	</section>
     </div>
 </template>
 
 <script>
-import { getMoneyListPage, getRecordListPage } from "../../../api/api";
+import { getMoneyListPage, getShRecordListPage } from "../../../api/api";
 
 export default {
   data() {
@@ -209,11 +186,6 @@ export default {
     formatType: function(row, column) {
       return row.type == 1 ? "商会分润" : row.type == 0 ? "销售" : "全部";
     },
-    handleClick(tab, event) {
-      //console.log(tab, event);
-      // console.log(event.target.getAttribute("id"));
-    },
-
     moneyList() {
       let para = {
         page: this.money_page
@@ -229,7 +201,7 @@ export default {
       });
     },
 
-    getRecord() {
+    getShRecord() {
       let para = {
         page: this.record_page,
         time: this.form.time,
@@ -238,10 +210,10 @@ export default {
       };
       this.listLoading = true;
       //NProgress.start();
-      getRecordListPage(para).then(res => {
+      getShRecordListPage(para).then(res => {
         console.log(para.state);
         this.record_total = res.data.total;
-        this.Records = res.data.Records;
+        this.Records = res.data.ShRecordsList;
         // console.log(res.data);
         this.listLoading = false;
         //NProgress.done();
@@ -249,7 +221,7 @@ export default {
     },
     handleCurrentChange(val) {
       this.page = val;
-      this.getRecord();
+      this.getShRecord();
     },
     MoneyPageChange(val) {
       this.money_page = val;
@@ -257,7 +229,7 @@ export default {
     },
     changeState(val) {
       this.form.state = val;
-      this.getRecord();
+      this.getShRecord();
     }
   },
   computed: {
@@ -266,7 +238,7 @@ export default {
     }
   },
   mounted() {
-    this.getRecord();
+    this.getShRecord();
     this.moneyList();
   }
 };

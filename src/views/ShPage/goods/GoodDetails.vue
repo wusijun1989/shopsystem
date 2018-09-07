@@ -2,68 +2,52 @@
 <div class="main-content" style="padding:40px 0">
 	<el-form ref="form" :model="form" label-width="150px" @submit.prevent="onSubmit" style="width:60%;min-width:600px;">
 		<el-form-item label="商品名称">
-			<el-input v-model="form.name" style="width:400px"></el-input>
+      <span>蘑菇500g</span>
+			
 		</el-form-item>
 		<el-form-item label="商品描述" >
-				<el-input type="textarea" v-model="form.desc" style="width:400px"></el-input>
+      <span>好吃的蘑菇</span>
+				
 		</el-form-item>
     	<el-form-item label="挂牌价" >
-			<el-input v-model="form.name" style="width:200px"></el-input>
+        <span>20</span>
+		
 		</el-form-item>
     	<el-form-item label="售卖价">
-			<el-input v-model="form.name"  style="width:200px"></el-input>
+         <span>15</span>
 		</el-form-item>
-        	<el-form-item label="是否上架">
-			<el-radio-group v-model="form.resource">
-				<el-radio label="是"></el-radio>
-				<el-radio label="否"></el-radio>
-			</el-radio-group>
-		</el-form-item>
-	<el-form-item label="商品缩略图">
-			<el-upload
-  class="avatar-uploader"
-  action="https://jsonplaceholder.typicode.com/posts/"
-  :show-file-list="false"
-  :on-success="handleAvatarSuccess"
-  :before-upload="beforeAvatarUpload">
-  <img v-if="imageUrl" :src="imageUrl" class="avatar">
-  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-</el-upload>
+
+	 <el-form-item label="商品缩略图">
+    <img src="http://dummyimage.com/125x125"/>
 		</el-form-item>
 
     
 	<el-form-item label="商品banner图">
-			<el-upload
-  action="https://jsonplaceholder.typicode.com/posts/"
-  list-type="picture-card"
-  :on-preview="handlePictureCardPreview"
-  :on-remove="handleRemove">
-  <i class="el-icon-plus"></i>
-</el-upload>
-<el-dialog :visible.sync="dialogVisible">
-  <img width="100%" :src="dialogImageUrl" alt="">
-</el-dialog>
+
+      <img src="http://dummyimage.com/125x125"/>
+      <img src="http://dummyimage.com/125x125"/>
+      <img src="http://dummyimage.com/125x125"/>
+
 		</el-form-item>
-		
-        
-
-         <el-form-item label="商品详情">
-          <template>
-     <quill-editor 
-      v-model="content" 
-      ref="myQuillEditor" 
-      :options="editorOption" 
-      @blur="onEditorBlur($event)" @focus="onEditorFocus($event)"
-      @change="onEditorChange($event)">
-    </quill-editor>
-</template>  
-                        </el-form-item>
-
-
-
+	
+    <el-form-item label="商品详情">
+         <span>阿斯达是</span>
+    </el-form-item>
+ <el-form-item label="推广费率">
+         <span>5% ￥5.00</span>
+    </el-form-item>
+ <el-form-item label="供应商">
+         <span>企业名称</span>
+    </el-form-item>
+<el-form-item label="创建时间">
+         <span>2018-9-10</span>
+    </el-form-item>
+<el-form-item label="申请时间">
+         <span>2018-9-10</span>
+  </el-form-item>
 		<el-form-item>
-			<el-button type="primary">立即创建</el-button>
-			<el-button @click.native.prevent>取消</el-button>
+			<el-button type="primary">审核通过</el-button>
+			<el-button @click.native.prevent>驳回申请</el-button>
 		</el-form-item>
 	</el-form>
     </div>

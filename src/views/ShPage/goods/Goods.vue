@@ -1,16 +1,7 @@
 <template>
 <div class="main-content">
 	<section>
-		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="padding-bottom: 0px; margin-bottom:20px;">
-			<el-form :inline="true" :model="filters">
-			
-				<el-form-item>
-					<el-button type="primary"  @click="$router.push('/addgoods')">新增商品</el-button>
-				</el-form-item>
-			</el-form>
-		</el-col>
-<el-radio-group v-model="radio3" style="margin-bottom:20px"><el-radio-button label="上架中"></el-radio-button><el-radio-button label="待上架"></el-radio-button><el-radio-button label="已下架"></el-radio-button>   </el-radio-group>
+<el-radio-group v-model="radio3" style="margin-bottom:20px"><el-radio-button label="待审核"></el-radio-button><el-radio-button label="推广中"></el-radio-button></el-radio-group>
 		<!--列表-->
 
 <div class="table-wap">
@@ -32,19 +23,22 @@
    				 </template>
 
 			</el-table-column>
-			<el-table-column prop="time" label="创建时间" width="200"   sortable>
+			<el-table-column prop="time" label="申请时间" width="200"   sortable>
 			</el-table-column>
-			<el-table-column prop="age" label="访客数/浏览量" width="150"  sortable>
+      	<el-table-column prop="state" label="状态" width="150" :formatter="formatSex" sortable>
 			</el-table-column>
-			<el-table-column prop="sales" label="总销量" width="150"  sortable>
+	<el-table-column prop="Supplier" label="供应商" width="200"   sortable>
 			</el-table-column>
-			<el-table-column prop="state" label="状态" width="150" :formatter="formatSex" sortable>
+		<el-table-column prop="" label="推广费率" width="200"   sortable>
+      			<template slot-scope="scope">
+      				{{scope.row.percent}}% 
+					 ￥{{scope.row.fee}}
+   				 </template>
 			</el-table-column>
+		
 			<el-table-column label="操作" width="250" fixed="right">
 				<template slot-scope="scope">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
-					<el-button type="warning" size="small">下架</el-button>
+					<el-button type="primary" size="small" @click="handleEdit(scope.$index, scope.row)">审核</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -118,13 +112,7 @@
 <script>
 import util from "../../../common/js/util";
 //import NProgress from 'nprogress'
-import {
-  getUserListPage,
-  removeUser,
-  batchRemoveUser,
-  editUser,
-  addUser
-} from "../../../api/api";
+import { getShGoodsPage } from "../../../api/api";
 
 export default {
   data() {
@@ -137,7 +125,6 @@ export default {
       page: 1,
       listLoading: false,
       sels: [], //列表选中列
-
       editFormVisible: false, //编辑界面是否显示
       editLoading: false,
       editFormRules: {
@@ -166,29 +153,28 @@ export default {
         birth: "",
         addr: ""
       },
-      radio3: "上架中"
+      radio3: "待审核"
     };
   },
   methods: {
     //性别显示转换
     formatSex: function(row, column) {
-      return row.sex == 1 ? "已上架" : row.sex == 0 ? "代上架" : "已下架";
+      return row.state == 1 ? "待审核" : row.state == 0 ? "推广中" : "推广中";
     },
     handleCurrentChange(val) {
       this.page = val;
-      this.getUsers();
+      this.getShGoods();
     },
     //获取用户列表
-    getUsers() {
+    getShGoods() {
       let para = {
-        page: this.page,
-        name: this.filters.name
+        page: this.page
       };
       this.listLoading = true;
       //NProgress.start();
-      getUserListPage(para).then(res => {
+      getShGoodsPage(para).then(res => {
         this.total = res.data.total;
-        this.users = res.data.users;
+        this.users = res.data.ShGoodsList;
         // console.log(res.data);
         this.listLoading = false;
         //NProgress.done();
@@ -210,7 +196,7 @@ export default {
               message: "删除成功",
               type: "success"
             });
-            this.getUsers();
+            this.getShGoods();
           });
         })
         .catch(() => {});
@@ -313,7 +299,7 @@ export default {
     }
   },
   mounted() {
-    this.getUsers();
+    this.getShGoods();
   }
 };
 </script>

@@ -23,6 +23,14 @@ export const getShMoneyListPage = params => {
         params: params
     });
 };
+export const getShGoodsPage = params => {
+    return axios.get(`${base}/shgoods/listpage`, {
+        params: params
+    });
+};
+
+
+
 export const getShMoneyMain = params => {
     return axios.get(`${base}/shmoney/main`, {});
 };
@@ -32,6 +40,14 @@ export const getRecordListPage = params => {
         params: params
     });
 };
+export const getShRecordListPage = params => {
+    return axios.get(`${base}/shrecord/listpage`, {
+        params: params
+    });
+};
+
+
+
 
 export const getUserListPage = params => {
     return axios.get(`${base}/user/listpage`, {
