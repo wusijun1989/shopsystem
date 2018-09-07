@@ -9,7 +9,9 @@ const ShMoneyList = [];
 
 const ShMoneyMain = Mock.mock({
   'yesterday_income|100-9999.2-2': 1,
+  'yesterday_order|100-9999.2-2': 1,
   'can_use_money|100-9999.2-2': 1,
+  yesterday_order_num: Mock.Random.natural(0, 9999),
   total_order_num: Mock.Random.natural(0, 9999),
   send_order_num: Mock.Random.natural(0, 9999),
   collect_order_num: Mock.Random.natural(0, 9999),

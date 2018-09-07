@@ -11,7 +11,7 @@
                             <span>昨日交易额</span>
                         </div>
                         <div  class="text item">
-                                 <span class="f-36">99999</span>
+                                 <span class="f-36">{{SH_totalnum.yesterday_income}}</span>
     总计昨日交易金额 
                         </div>
                     </el-card>
@@ -22,10 +22,10 @@
 			<el-card class="box-card"  >
             <div slot="header" class="clearfix">
                 <span>可提现余额</span>
-              <el-button style="float: right; padding: 3px 0" type="text">提现</el-button> 
+              <el-button style="float: right; padding: 3px 0" type="text" @click="dialogFormVisible = true">提现</el-button> 
             </div>
             <div  class="text item">
-                                            <span class="f-36">99999</span>
+                                            <span class="f-36">{{SH_totalnum.can_use_money}}</span>
  总计可提现金额
             </div>
             </el-card>
@@ -47,7 +47,7 @@
     <span>总订单</span>
   </div>
   <div  class="text item">
-    <span class="f-24">99999</span>
+    <span class="f-24">{{SH_totalnum.total_order_num}}</span>
     总计订单量 
   </div>
 </el-card></el-col>
@@ -58,7 +58,7 @@
     <span>待发货订单</span>
   </div>
   <div  class="text item">
-      <span class="f-24">99999</span>
+      <span class="f-24">{{SH_totalnum.send_order_num}}</span>
     总计待发货订单量 
   </div>
 </el-card>
@@ -70,7 +70,7 @@
     <span>待收货订单</span>
   </div>
   <div  class="text item">
-         <span class="f-24">99999</span>
+         <span class="f-24">{{SH_totalnum.collect_order_num}}</span>
     总计待收货订单量 
   </div>
 </el-card>
@@ -83,7 +83,7 @@
 
   </div>
   <div  class="text item">
-         <span  class="f-24">99999</span>
+         <span  class="f-24">{{SH_totalnum.yesterday_order_num}}</span>
     总计昨日订单量 
   </div>
 </el-card>
@@ -101,12 +101,51 @@
 		<el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
 	</el-row>
 
-
+<el-dialog title="提现" :visible.sync="dialogFormVisible">
+  <el-form :model="subform" label-width="30%">
+    <el-form-item label="提现金额" >
+      <el-input v-model="subform.money" auto-complete="off" style="width:200px; "></el-input>
+    </el-form-item>
+    <el-form-item label="验证码" >
+ <el-input v-model="subform.code" auto-complete="off" style="width:200px; margin-right:20px;"></el-input>   <el-button type="primary">发送验证码</el-button>
+    </el-form-item>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+  </div>
+</el-dialog>
 	</section>
 </template>
 
 <script>
-export default {};
+import { getShMoneyMain } from "../../api/api";
+export default {
+  data() {
+    return {
+      subform: {
+        money: "",
+        code: ""
+      },
+      dialogFormVisible: false,
+      SH_totalnum: "",
+      MoneyList: [],
+      money_total: 0,
+      money_page: 1,
+      listLoading: false
+    };
+  },
+  methods: {
+    shmoneyMain() {
+      getShMoneyMain().then(res => {
+        this.SH_totalnum = res.data.ShMoneyMain;
+      });
+    }
+  },
+  mounted() {
+    this.shmoneyMain();
+  }
+};
 </script>
 
 <style lang="scss" scoped>
