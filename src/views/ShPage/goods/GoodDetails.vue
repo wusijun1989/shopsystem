@@ -1,117 +1,158 @@
 <template>
 <div class="main-content" style="padding:40px 0">
-	<el-form ref="form" :model="form" label-width="150px" @submit.prevent="onSubmit" style="width:60%;min-width:600px;">
+	<el-form  :model="editForm"  label-width="150px"  ref="editForm" style="width:60%;min-width:600px;">
 		<el-form-item label="商品名称">
-      <span>蘑菇500g</span>
+      
+      <span>{{gooddetail.name}}</span>
 			
 		</el-form-item>
 		<el-form-item label="商品描述" >
-      <span>好吃的蘑菇</span>
+      <span>{{gooddetail.describe}}</span>
 				
 		</el-form-item>
     	<el-form-item label="挂牌价" >
-        <span>20</span>
+        <span>￥{{gooddetail.price}}</span>
 		
 		</el-form-item>
     	<el-form-item label="售卖价">
-         <span>15</span>
+         <span>￥{{gooddetail.price2}}</span>
 		</el-form-item>
 
 	 <el-form-item label="商品缩略图">
-    <img src="http://dummyimage.com/125x125"/>
+    <img :src="gooddetail.goods"/>
 		</el-form-item>
 
     
 	<el-form-item label="商品banner图">
 
-      <img src="http://dummyimage.com/125x125"/>
-      <img src="http://dummyimage.com/125x125"/>
-      <img src="http://dummyimage.com/125x125"/>
+<template v-for="(key, value) in gooddetail.runpic"  >
+<img :src="key.pic" :alt="value"  />
+
+</template>
 
 		</el-form-item>
 	
     <el-form-item label="商品详情">
-         <span>阿斯达是</span>
+         <span>{{gooddetail.details}}</span>
     </el-form-item>
  <el-form-item label="推广费率">
-         <span>5% ￥5.00</span>
+         <span>{{gooddetail.percent}}% ￥{{gooddetail.fee}}</span>
     </el-form-item>
  <el-form-item label="供应商">
-         <span>企业名称</span>
+         <span>{{gooddetail.Supplier}}</span>
     </el-form-item>
 <el-form-item label="创建时间">
-         <span>2018-9-10</span>
+         <span> {{gooddetail.start_time}}</span>
     </el-form-item>
 <el-form-item label="申请时间">
-         <span>2018-9-10</span>
+         <span> {{gooddetail.apply_time}}</span>
   </el-form-item>
 		<el-form-item>
-			<el-button type="primary">审核通过</el-button>
-			<el-button @click.native.prevent>驳回申请</el-button>
+      <template v-if="gooddetail.state==0">	
+        <el-button type="primary" @click.native="editSubmit(1)">审核通过</el-button>
+        <el-button @click.native="editSubmit(2)" >驳回申请</el-button>
+      </template>
+      <template  v-if="gooddetail.state==1">
+        <el-button type="warning" @click.native="turnoff">下架</el-button>
+        <el-button type="primary" @click="this.$router.push('/shgoods')">返回</el-button>
+      </template>
+
 		</el-form-item>
 	</el-form>
     </div>
 </template>
 
 <script>
-import { quillEditor } from "vue-quill-editor";
+import util from "../../../common/js/util";
+import { getShGoodsDetail, editShGoods } from "../../../api/api";
+
 export default {
   data() {
     return {
-      content: null,
-      editorOption: {},
-
-      form: {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: ""
+      gooddetail: [],
+      editLoading: false,
+      editForm: {
+        id: this.$route.query.id,
+        state: 1
       },
-      imageUrl: "",
-      dialogImageUrl: "",
-      dialogVisible: false
+      turnForm: {
+        buystate: 0
+      }
     };
   },
   methods: {
-    onEditorBlur() {
-      //失去焦点事件
-    },
-    onEditorFocus() {
-      //获得焦点事件
-    },
-    onEditorChange() {
-      //内容改变事件
+    turnoff: function() {
+      this.$refs.editForm.validate(valid => {
+        if (valid) {
+          this.$confirm("确认提交吗？", "提示", {}).then(() => {
+            this.editLoading = true;
+            //NProgress.start();
+            let para = Object.assign({}, this.turnForm);
+            editShGoods(para).then(res => {
+              this.editLoading = false;
+              //NProgress.done();
+              this.$message({
+                message: "提交成功",
+                type: "success"
+              });
+              this.$router.push({
+                path: "/shgoods"
+              });
+            });
+          });
+        }
+      });
     },
 
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
+    getdetail() {
+      let goodid = this.$route.query.id;
+      console.log(goodid);
+      let para = {
+        page: this.page,
+        id: goodid
+      };
+      getShGoodsDetail(para).then(data => {
+        let { msg, code, detail } = data;
+        if (code !== 200) {
+          this.$message({
+            message: msg,
+            type: "error"
+          });
+        } else {
+          console.log(data.detail);
+          this.gooddetail = data.detail;
+        }
+      });
     },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
-      }
-      if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
-      }
-      return isJPG && isLt2M;
-    },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
-    handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
+    editSubmit: function(data) {
+      this.state = data;
+      this.$refs.editForm.validate(valid => {
+        if (valid) {
+          this.$confirm("确认提交吗？", "提示", {}).then(() => {
+            this.editLoading = true;
+            //NProgress.start();
+            let para = Object.assign({}, this.editForm);
+            editShGoods(para).then(res => {
+              this.editLoading = false;
+              //NProgress.done();
+              this.$message({
+                message: "提交成功",
+                type: "success"
+              });
+              this.$router.push({
+                path: "/shgoods"
+              });
+            });
+          });
+        }
+      });
     },
     onSubmit() {
       console.log("submit!");
     }
+  },
+  mounted() {
+    this.getdetail();
   }
 };
 </script>

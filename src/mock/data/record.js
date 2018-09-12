@@ -45,7 +45,8 @@ for (let i = 0; i < 40; i++) {
     state: Mock.Random.integer(0, 4),
     time: Mock.Random.datetime(),
     updata_time: Mock.Random.datetime(),
-    remarks: Mock.Random.ctitle(2, 8)
+    remarks: Mock.Random.ctitle(2, 8),
+
   }));
 }
 

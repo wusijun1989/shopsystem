@@ -95,7 +95,7 @@
 <strong data-v-1cef26d9="" class="title" style="color:#475669">常用功能</strong>
 
 	<el-row :gutter="20" class="main-center">
-  		<el-col :span="6"><div class="grid-content bg-purple"><el-button type="primary" icon="el-icon-edit-outline">发布商品</el-button>   </div></el-col>
+  		<el-col :span="6"><div class="grid-content bg-purple"><el-button type="primary" icon="el-icon-edit-outline" @click="this.$router.push('/qyaddgoods')">发布商品</el-button>   </div></el-col>
   		<el-col :span="6"><div class="grid-content bg-purple"> <el-button type="primary" icon="el-icon-document">收入/提现</el-button> </div></el-col>
   		<el-col :span="6"><div class="grid-content bg-purple"> <el-button type="primary" icon="el-icon-service">帮助中心</el-button> </div></el-col>
 		<el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
@@ -107,7 +107,7 @@
       <el-input v-model="subform.money" auto-complete="off" style="width:200px; "></el-input>
     </el-form-item>
     <el-form-item label="验证码" >
- <el-input v-model="subform.code" auto-complete="off" style="width:200px; margin-right:20px;"></el-input>   <el-button type="primary">发送验证码</el-button>
+ <el-input v-model="subform.code" auto-complete="off" style="width:200px; margin-right:20px;"></el-input>   <el-button type="primary" :disabled="isOvertime" :loading="clicktime" @click="sendcode">{{word}}</el-button>
     </el-form-item>
   </el-form>
   <div slot="footer" class="dialog-footer">
@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import { getShMoneyMain } from "../../api/api";
+import { getShMoneyMain, SendCode } from "../../api/api";
 export default {
   data() {
     return {
@@ -127,6 +127,11 @@ export default {
         money: "",
         code: ""
       },
+      word: "发送验证码",
+      isOvertime: false,
+      clicktime: false,
+      phone: "17306814482",
+      code: "",
       dialogFormVisible: false,
       SH_totalnum: "",
       MoneyList: [],
@@ -136,6 +141,52 @@ export default {
     };
   },
   methods: {
+    sendMessage() {
+      if (this.isOvertime) {
+        return false;
+      }
+      let that = this,
+        time = 60;
+      var sendTimer = setInterval(function() {
+        that.isOvertime = true;
+        time--;
+        that.word = "重新发送 (" + time + ")";
+        if (time < 0) {
+          that.isOvertime = false;
+          clearInterval(sendTimer);
+          that.word = "获取验证码";
+        }
+      }, 1000);
+    },
+    sendcode() {
+      var self = this;
+      if (!this.clicktime) {
+        this.clicktime = true;
+
+        let para = {
+          phone: this.phone
+        };
+        SendCode(para).then(data => {
+          let { msg, code, mycode } = data;
+          if (code !== 200) {
+            this.$message({
+              message: msg,
+              type: "error"
+            });
+          } else {
+            setTimeout(function() {
+              self.clicktime = false;
+            }, 1000);
+            this.sendMessage();
+            this.$message({
+              message: "验证码发送成功！",
+              type: "success"
+            });
+            console.log(data.mycode.code);
+          }
+        });
+      }
+    },
     shmoneyMain() {
       getShMoneyMain().then(res => {
         this.SH_totalnum = res.data.ShMoneyMain;

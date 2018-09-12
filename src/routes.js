@@ -65,22 +65,12 @@ let routes = [{
         name: '商品管理',
         type: "qiye",
         iconCls: 'fa fa-window-restore', //图标样式class
+        leaf: true, //只有一个节点
         children: [{
-                path: '/qygoods',
-                component: QyGoods,
-                name: '商品管理'
-            },
-            {
-                path: '/qyaddgoods',
-                component: QyAddGoods,
-                name: '添加商品'
-            },
-            {
-                path: '/qyextendgoods',
-                component: QyExtendGoods,
-                name: '商品推广'
-            },
-        ]
+            path: '/qygoods',
+            component: QyGoods,
+            name: '商品管理'
+        }]
     },
     {
         path: '/',
@@ -133,7 +123,7 @@ let routes = [{
         component: ShHome,
         name: '商会概况   ',
         type: "shanghui",
-        iconCls: 'fa fa-cube', //图标样式class
+        iconCls: 'fa fa-pie-chart', //图标样式class
         leaf: true, //只有一个节点
         children: [{
             path: '/shmain',
@@ -146,18 +136,13 @@ let routes = [{
         component: ShHome,
         name: '商品管理   ',
         type: "shanghui",
+        leaf: true, //只有一个节点
         iconCls: 'fa fa-cube', //图标样式class
         children: [{
-                path: '/shgoods',
-                component: ShGoods,
-                name: '商品管理  '
-            }, {
-                path: '/shgoodsdetails',
-                component: ShGoodDetails,
-                name: '商品详情'
-            },
-
-        ]
+            path: '/shgoods',
+            component: ShGoods,
+            name: '商品管理  '
+        }]
     },
     {
         path: '/',
@@ -178,7 +163,7 @@ let routes = [{
         component: ShHome,
         type: "shanghui",
         name: '企业管理',
-        iconCls: 'fa fa-bar-chart', //图标样式class
+        iconCls: 'fa  fa-tasks', //图标样式class
         children: [{
                 path: '/shcompany',
                 component: ShCompany,

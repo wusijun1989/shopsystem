@@ -1,7 +1,7 @@
 <template>
 <div class="main-content">
 	<section>
-<el-radio-group v-model="radio3" style="margin-bottom:20px"><el-radio-button label="待审核"></el-radio-button><el-radio-button label="推广中"></el-radio-button></el-radio-group>
+<el-radio-group v-model="state" @change="changeState" style="margin-bottom:20px"><el-radio-button label="0">待审核</el-radio-button><el-radio-button label="1">推广中</el-radio-button></el-radio-group>
 		<!--列表-->
 
 <div class="table-wap">
@@ -23,9 +23,9 @@
    				 </template>
 
 			</el-table-column>
-			<el-table-column prop="time" label="申请时间" width="200"   sortable>
+			<el-table-column prop="apply_time" label="申请时间" width="200"   sortable>
 			</el-table-column>
-      	<el-table-column prop="state" label="状态" width="150" :formatter="formatSex" sortable>
+      	<el-table-column prop="state" label="状态" width="150" :formatter="GoodState" sortable>
 			</el-table-column>
 	<el-table-column prop="Supplier" label="供应商" width="200"   sortable>
 			</el-table-column>
@@ -36,18 +36,23 @@
    				 </template>
 			</el-table-column>
 		
-			<el-table-column label="操作" width="250" fixed="right">
-				<template slot-scope="scope">
-					<el-button type="primary" size="small" @click="handleEdit(scope.$index, scope.row)">审核</el-button>
-				</template>
+		<el-table-column label="操作" width="250" fixed="right">
+     
+		<template slot-scope="scope">
+					<el-button type="primary" size="small" v-if="scope.row.state==0" @click="handleEdit(scope.$index, scope.row.id)">审核</el-button>
+			  	<el-button type="primary" size="small" v-if="scope.row.state==1" @click="handleEdit(scope.$index, scope.row.id)">查看</el-button>
+					<el-button type="warning" size="small" v-if="scope.row.state==1" @click="handleEdit(scope.$index, scope.row.id)">下架</el-button>
+    </template>
+      
 			</el-table-column>
 		</el-table>
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style=" float:none;">
-			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
+			
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
 			</el-pagination>
+      <div style="clear:both"></div>
 		</el-col>
 </div>
 		<!--编辑界面-->
@@ -78,33 +83,7 @@
 			</div>
 		</el-dialog>
 
-		<!--新增界面-->
-		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="性别">
-					<el-radio-group v-model="addForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="addForm.age" :min="0" :max="200"></el-input-number>
-				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="addForm.addr"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="addFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
-			</div>
-		</el-dialog>
+	
 	</section>
     </div>
 </template>
@@ -120,6 +99,7 @@ export default {
       filters: {
         name: ""
       },
+      state: 0,
       users: [],
       total: 0,
       page: 1,
@@ -140,7 +120,6 @@ export default {
         addr: ""
       },
 
-      addFormVisible: false, //新增界面是否显示
       addLoading: false,
       addFormRules: {
         name: [{ required: true, message: "请输入姓名", trigger: "blur" }]
@@ -158,8 +137,8 @@ export default {
   },
   methods: {
     //性别显示转换
-    formatSex: function(row, column) {
-      return row.state == 1 ? "待审核" : row.state == 0 ? "推广中" : "推广中";
+    GoodState: function(row, column) {
+      return row.state == 0 ? "待审核" : row.state == 1 ? "推广中" : "已驳回";
     },
     handleCurrentChange(val) {
       this.page = val;
@@ -168,6 +147,7 @@ export default {
     //获取用户列表
     getShGoods() {
       let para = {
+        state: this.state,
         page: this.page
       };
       this.listLoading = true;
@@ -181,70 +161,21 @@ export default {
       });
     },
     //删除
-    handleDel: function(index, row) {
-      this.$confirm("确认删除该记录吗?", "提示", {
-        type: "warning"
-      })
-        .then(() => {
-          this.listLoading = true;
-          //NProgress.start();
-          let para = { id: row.id };
-          removeUser(para).then(res => {
-            this.listLoading = false;
-            //NProgress.done();
-            this.$message({
-              message: "删除成功",
-              type: "success"
-            });
-            this.getShGoods();
-          });
-        })
-        .catch(() => {});
-    },
+
     //显示编辑界面
     handleEdit: function(index, row) {
-      this.editFormVisible = true;
-      this.editForm = Object.assign({}, row);
-    },
-    //显示新增界面
-    handleAdd: function() {
-      this.addFormVisible = true;
-      this.addForm = {
-        name: "",
-        sex: -1,
-        age: 0,
-        birth: "",
-        addr: ""
-      };
-    },
-
-    //编辑
-    editSubmit: function() {
-      this.$refs.editForm.validate(valid => {
-        if (valid) {
-          this.$confirm("确认提交吗？", "提示", {}).then(() => {
-            this.editLoading = true;
-            //NProgress.start();
-            let para = Object.assign({}, this.editForm);
-            para.birth =
-              !para.birth || para.birth == ""
-                ? ""
-                : util.formatDate.format(new Date(para.birth), "yyyy-MM-dd");
-            editUser(para).then(res => {
-              this.editLoading = false;
-              //NProgress.done();
-              this.$message({
-                message: "提交成功",
-                type: "success"
-              });
-              this.$refs["editForm"].resetFields();
-              this.editFormVisible = false;
-              this.getUsers();
-            });
-          });
-        }
+      this.$router.push({
+        path: "/shgoodsdetails",
+        query: { id: row }
       });
+      // _this.$router.push("/login");
     },
+    changeState(val) {
+      this.state = val;
+      this.getShGoods();
+    },
+    //编辑
+
     //新增
     addSubmit: function() {
       this.$refs.addForm.validate(valid => {

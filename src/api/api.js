@@ -5,6 +5,15 @@ let base = '';
 export const requestLogin = params => {
     return axios.post(`${base}/login`, params).then(res => res.data);
 };
+//发送验证码
+export const SendCode = params => {
+    return axios.post(`${base}/sendcode`, params).then(res => res.data);
+};
+//商会商品详情
+export const getShGoodsDetail = params => {
+    return axios.post(`${base}/shgoods/detail`, params).then(res => res.data);
+};
+
 
 export const getUserList = params => {
     return axios.get(`${base}/user/list`, {
@@ -23,11 +32,21 @@ export const getShMoneyListPage = params => {
         params: params
     });
 };
+
+//商会商品管理
 export const getShGoodsPage = params => {
     return axios.get(`${base}/shgoods/listpage`, {
         params: params
     });
 };
+//商会商品审核shgoods
+export const editShGoods = params => {
+    return axios.get(`${base}/shgoods/edit`, {
+        params: params
+    });
+};
+
+
 
 //商会企业管理列表
 export const getShCompanyListPage = params => {
@@ -56,8 +75,8 @@ export const getShRecordListPage = params => {
 
 
 
-export const getUserListPage = params => {
-    return axios.get(`${base}/user/listpage`, {
+export const getQyGoodsListPage = params => {
+    return axios.get(`${base}/qygoods/listpage`, {
         params: params
     });
 };

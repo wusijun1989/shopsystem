@@ -2,7 +2,6 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {
   LoginUsers,
-  Users
 } from './data/user';
 import {
   Records,
@@ -13,12 +12,17 @@ import {
 } from './data/record';
 import {
   ShGoodsList,
+  QyGoodsList
 } from './data/goods';
 import {
   ShCompanyList,
 } from './data/company';
+import {
+  Code,
+} from './data/code';
 
-let _Users = Users;
+
+
 let _Records = Records;
 let _MoneyList = MoneyList;
 let _ShMoneyList = ShMoneyList;
@@ -26,6 +30,7 @@ let _ShGoodsList = ShGoodsList;
 let _ShRecordsList = ShRecordsList;
 let _ShCompanyList = ShCompanyList;
 let _ShMoneyMain = ShMoneyMain;
+let _QyGoodsList = QyGoodsList;
 
 
 export default {
@@ -78,6 +83,39 @@ export default {
       });
     });
 
+    //发送验证码
+    mock.onPost('/sendcode').reply(config => {
+      let {
+        phone
+      } = JSON.parse(config.data);
+      return new Promise((resolve, reject) => {
+
+        let mycode = null;
+        setTimeout(() => {
+          let hasUser = Code.some(u => {
+            if (u.phone === phone) {
+              mycode = JSON.parse(JSON.stringify(u));
+              return true;
+            }
+          });
+          if (hasUser) {
+            resolve([200, {
+              code: 200,
+              msg: '请求成功',
+              mycode
+            }]);
+          } else {
+            resolve([200, {
+              code: 500,
+              msg: '账号不存在'
+            }]);
+          }
+        }, 1000);
+
+      });
+    });
+
+
     //获取用户列表
     mock.onGet('/user/list').reply(config => {
       let {
@@ -96,24 +134,26 @@ export default {
       });
     });
 
-    //获取用户列表（分页）
-    mock.onGet('/user/listpage').reply(config => {
+
+
+
+    //获取企业商品列表（分页）
+    mock.onGet('/qygoods/listpage').reply(config => {
       let {
         page,
-        name
+        state
       } = config.params;
-      let mockUsers = _Users.filter(user => {
-
-        if (name && user.name.indexOf(name) == -1) return false;
+      let mockQyGoodsList = _QyGoodsList.filter(user => {
+        if (state && user.state != state * 1) return false;
         return true;
       });
-      let total = mockUsers.length;
-      mockUsers = mockUsers.filter((u, index) => index < 20 * page && index >= 20 * (page - 1));
+      let total = mockQyGoodsList.length;
+      mockQyGoodsList = mockQyGoodsList.filter((u, index) => index < 20 * page && index >= 20 * (page - 1));
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve([200, {
             total: total,
-            users: mockUsers
+            goodslist: mockQyGoodsList
           }]);
         }, 1000);
       });
@@ -240,14 +280,16 @@ export default {
     //商会商品管理列表
     mock.onGet('/shgoods/listpage').reply(config => {
       let {
-        page
+        page,
+        state
       } = config.params;
-      let mockShGoodsList = _ShGoodsList.filter(record => {
+
+      let mockShGoodsList = _ShGoodsList.filter(goods => {
+        if (goods.state != state) return false;
         return true;
       });
       let total = mockShGoodsList.length;
       mockShGoodsList = mockShGoodsList.filter((u, index) => index < 10 * page && index >= 10 * (page - 1));
-
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve([200, {
@@ -257,6 +299,70 @@ export default {
         }, 1000);
       });
     });
+
+    //商会商品审核
+    mock.onGet('/shgoods/edit').reply(config => {
+      let {
+        id,
+        state,
+        buystate
+      } = config.params;
+      _ShGoodsList.some(u => {
+        if (u.id === id) {
+          if (state) {
+            u.state = state;
+          }
+          if (buystate) {
+            u.buystate = buystate;
+          }
+        }
+      });
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve([200, {
+            code: 200,
+            msg: '提交成功'
+          }]);
+        }, 500);
+      });
+    });
+
+    //商会商品详情
+    mock.onPost('/shgoods/detail').reply(config => {
+      let {
+        id
+      } = JSON.parse(config.data);
+      return new Promise((resolve, reject) => {
+        let detail = null;
+        setTimeout(() => {
+          let hasUser = ShGoodsList.some(u => {
+            if (u.id == id) {
+              detail = JSON.parse(JSON.stringify(u));
+              return true;
+            }
+          });
+          if (hasUser) {
+            resolve([200, {
+              code: 200,
+              msg: '请求成功',
+              detail
+            }]);
+          } else {
+            resolve([200, {
+              code: 500,
+              msg: '商品不存在'
+            }]);
+          }
+        }, 1000);
+
+
+
+      });
+    });
+
+
+
+
 
 
     //商会概览
@@ -304,6 +410,11 @@ export default {
         }, 500);
       });
     });
+
+
+
+
+
 
     //编辑用户
     mock.onGet('/user/edit').reply(config => {

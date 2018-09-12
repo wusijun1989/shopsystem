@@ -6,16 +6,16 @@
 			<el-form :inline="true" :model="filters">
 			
 				<el-form-item>
-					<el-button type="primary"  @click="$router.push('/addgoods')">新增商品</el-button>
+					<el-button type="primary"  @click="$router.push('/qyaddgoods')">新增商品</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
-<el-radio-group v-model="radio3" style="margin-bottom:20px"><el-radio-button label="上架中"></el-radio-button><el-radio-button label="待上架"></el-radio-button><el-radio-button label="已下架"></el-radio-button>   </el-radio-group>
+<el-radio-group v-model="state" @change="changeState" style="margin-bottom:20px"><el-radio-button label="1">上架中</el-radio-button><el-radio-button label="0">待上架</el-radio-button><el-radio-button label="2">已下架</el-radio-button>   </el-radio-group>
 		<!--列表-->
 
 <div class="table-wap">
 
-		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
+		<el-table :data="goodslist" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
 			<el-table-column type="selection" width="80" fixed="left">
 			</el-table-column>
 			<el-table-column type="index" width="60">
@@ -38,7 +38,7 @@
 			</el-table-column>
 			<el-table-column prop="sales" label="总销量" width="150"  sortable>
 			</el-table-column>
-			<el-table-column prop="state" label="状态" width="150" :formatter="formatSex" sortable>
+			<el-table-column prop="state" label="状态" width="150" :formatter="formatState" sortable>
 			</el-table-column>
 			<el-table-column label="操作" width="250" fixed="right">
 				<template slot-scope="scope">
@@ -119,7 +119,7 @@
 import util from "../../../common/js/util";
 //import NProgress from 'nprogress'
 import {
-  getUserListPage,
+  getQyGoodsListPage,
   removeUser,
   batchRemoveUser,
   editUser,
@@ -132,7 +132,8 @@ export default {
       filters: {
         name: ""
       },
-      users: [],
+      goodslist: [],
+      state: 1,
       total: 0,
       page: 1,
       listLoading: false,
@@ -170,25 +171,28 @@ export default {
     };
   },
   methods: {
-    //性别显示转换
-    formatSex: function(row, column) {
-      return row.sex == 1 ? "已上架" : row.sex == 0 ? "代上架" : "已下架";
+    formatState: function(row, column) {
+      return row.state == 1 ? "已上架" : row.state == 0 ? "待上架" : "已下架";
     },
     handleCurrentChange(val) {
       this.page = val;
       this.getUsers();
     },
-    //获取用户列表
-    getUsers() {
+    changeState(val) {
+      this.state = val;
+      this.getGoodsList();
+    },
+    //获取商品列表
+    getGoodsList() {
       let para = {
         page: this.page,
-        name: this.filters.name
+        state: this.state
       };
       this.listLoading = true;
       //NProgress.start();
-      getUserListPage(para).then(res => {
+      getQyGoodsListPage(para).then(res => {
         this.total = res.data.total;
-        this.users = res.data.users;
+        this.goodslist = res.data.goodslist;
         // console.log(res.data);
         this.listLoading = false;
         //NProgress.done();
@@ -210,7 +214,7 @@ export default {
               message: "删除成功",
               type: "success"
             });
-            this.getUsers();
+            this.getGoodsList();
           });
         })
         .catch(() => {});
@@ -253,7 +257,7 @@ export default {
               });
               this.$refs["editForm"].resetFields();
               this.editFormVisible = false;
-              this.getUsers();
+              this.getGoodsList();
             });
           });
         }
@@ -280,7 +284,7 @@ export default {
               });
               this.$refs["addForm"].resetFields();
               this.addFormVisible = false;
-              this.getUsers();
+              this.getGoodsList();
             });
           });
         }
@@ -306,14 +310,14 @@ export default {
               message: "删除成功",
               type: "success"
             });
-            this.getUsers();
+            this.getGoodsList();
           });
         })
         .catch(() => {});
     }
   },
   mounted() {
-    this.getUsers();
+    this.getGoodsList();
   }
 };
 </script>

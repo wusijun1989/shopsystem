@@ -22,7 +22,7 @@
 			<el-card class="box-card"  >
             <div slot="header" class="clearfix">
                 <span>可提现余额</span>
-              <el-button style="float: right; padding: 3px 0" type="text">提现</el-button> 
+              <el-button style="float: right; padding: 3px 0" type="text" @click="dialogFormVisible = true">提现</el-button> 
             </div>
             <div  class="text item">
                                             <span class="f-36">{{SH_totalnum.can_use_money}}</span>
@@ -112,16 +112,39 @@
                         </el-pagination>
                     </el-col>
 </template>
-
+<el-dialog title="提现" :visible.sync="dialogFormVisible">
+  <el-form :model="subform" label-width="30%">
+    <el-form-item label="提现金额" >
+      <el-input v-model="subform.money" auto-complete="off" style="width:200px; "></el-input>
+    </el-form-item>
+    <el-form-item label="验证码" >
+ <el-input v-model="subform.code" auto-complete="off" style="width:200px; margin-right:20px;"></el-input>   <el-button type="primary" :disabled="isOvertime" :loading="clicktime" @click="sendcode">{{word}}</el-button>
+    </el-form-item>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+  </div>
+</el-dialog>
 
 	</section>
 </template>
 
 <script>
-import { getShMoneyListPage, getShMoneyMain } from "../../api/api";
+import { getShMoneyListPage, getShMoneyMain, SendCode } from "../../api/api";
 export default {
   data() {
     return {
+      subform: {
+        money: "",
+        code: ""
+      },
+      word: "发送验证码",
+      isOvertime: false,
+      phone: "17306814482",
+      code: "",
+      clicktime: false,
+      dialogFormVisible: false,
       SH_totalnum: "",
       MoneyList: [],
       money_total: 0,
@@ -130,6 +153,52 @@ export default {
     };
   },
   methods: {
+    sendMessage() {
+      if (this.isOvertime) {
+        return false;
+      }
+      let that = this,
+        time = 60;
+      var sendTimer = setInterval(function() {
+        that.isOvertime = true;
+        time--;
+        that.word = "重新发送 (" + time + ")";
+        if (time < 0) {
+          that.isOvertime = false;
+          clearInterval(sendTimer);
+          that.word = "获取验证码";
+        }
+      }, 1000);
+    },
+    sendcode() {
+      var self = this;
+      if (!this.clicktime) {
+        this.clicktime = true;
+
+        let para = {
+          phone: this.phone
+        };
+        SendCode(para).then(data => {
+          let { msg, code, mycode } = data;
+          if (code !== 200) {
+            this.$message({
+              message: msg,
+              type: "error"
+            });
+          } else {
+            setTimeout(function() {
+              self.clicktime = false;
+            }, 1000);
+            this.sendMessage();
+            this.$message({
+              message: "验证码发送成功！",
+              type: "success"
+            });
+            console.log(data.mycode.code);
+          }
+        });
+      }
+    },
     shmoneyList() {
       let para = {
         page: this.money_page
@@ -147,7 +216,7 @@ export default {
     shmoneyMain() {
       getShMoneyMain().then(res => {
         this.SH_totalnum = res.data.ShMoneyMain;
-        console.log(this.SH_totalnum);
+        // console.log(this.SH_totalnum);
       });
     },
     MoneyPageChange(val) {
@@ -163,6 +232,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.el-button.is-loading {
+  pointer-events: visible;
+}
 .content-container {
   background: #f5f5f5;
 }

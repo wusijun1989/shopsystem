@@ -172,6 +172,9 @@ export default {
         }
       }, 300);
     },
+    handleClick(tab, event) {
+      console.log(tab, event);
+    },
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
     },

@@ -128,7 +128,11 @@ export default {
   created: function() {
     this.gettime();
   },
+
   methods: {
+    handleClick(tab, event) {
+      console.log(tab, event);
+    },
     change_iphone() {
       this.form.disabled = false;
     },
