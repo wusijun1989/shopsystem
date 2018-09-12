@@ -67,10 +67,17 @@ let routes = [{
         iconCls: 'fa fa-window-restore', //图标样式class
         leaf: true, //只有一个节点
         children: [{
-            path: '/qygoods',
-            component: QyGoods,
-            name: '商品管理'
-        }]
+                path: '/qygoods',
+                component: QyGoods,
+                name: '商品管理'
+            },
+            {
+                path: '/qyaddgoods',
+                component: QyAddGoods,
+                hidden: true,
+                name: '添加商品'
+            }
+        ]
     },
     {
         path: '/',
@@ -139,10 +146,17 @@ let routes = [{
         leaf: true, //只有一个节点
         iconCls: 'fa fa-cube', //图标样式class
         children: [{
-            path: '/shgoods',
-            component: ShGoods,
-            name: '商品管理  '
-        }]
+                path: '/shgoods',
+                component: ShGoods,
+                name: '商品管理  '
+            },
+            {
+                path: '/shgoodsdetails',
+                component: ShGoodDetails,
+                hidden: true,
+                name: '商品详情  '
+            }
+        ]
     },
     {
         path: '/',
